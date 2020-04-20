@@ -23,10 +23,23 @@ public class Post {
      */
     private String link;
 
+    /**
+     * Дата публикации вакансии.
+     */
+    private String date;
+
+
     public Post(String name, String desc, String link) {
         this.name = name;
         this.desc = desc;
         this.link = link;
+    }
+
+    public Post(String name, String desc, String link, String date) {
+        this.name = name;
+        this.desc = desc;
+        this.link = link;
+        this.date = date;
     }
 
     public String getName() {
@@ -39,6 +52,10 @@ public class Post {
 
     public String getLink() {
         return link;
+    }
+
+    public String getDate() {
+        return date;
     }
 
     @Override

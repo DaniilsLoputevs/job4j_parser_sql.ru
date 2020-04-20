@@ -22,18 +22,26 @@ public class Parser implements Parse {
     @Override
     public List<Post> list(String link) {
         List<Post> result = null;
-        link = link.substring(0,36);
         try {
-            Document doc = Jsoup.connect(link).get();
-
-
-            List<String> postsLinks = listOfPostsLinks(doc);
+            link = link.substring(0, 36);
             var run = true;
             int pageNum = 1;
 
-
             while (run) {
-                link = link + pageNum++;
+                // iterate forum pages
+                var newLink = link + pageNum++;
+                Document doc = Jsoup.connect(newLink).get();
+                List<String> postsLinks = listOfPostsLinks(doc);
+
+//                postsLinks.stream().flatMap(postLink -> postLink)
+
+
+                for (var postLink : postsLinks) {
+                    var temp = detail(postLink);
+                    // if date less that need >> break from forEach && brake from while
+                    // else add temp in result
+//                    if (temp.getDate() >)
+                }
 
             }
 
@@ -46,25 +54,40 @@ public class Parser implements Parse {
 
     @Override
     public Post detail(String link) {
-        return null;
+        var parser = new PostParser(link);
+        return new Post(
+                parser.parseName(),
+                parser.parseDesc(),
+                parser.parseLink(),
+                parser.parseDate()
+        );
     }
 
-//    private List<String> listOfAllLinks(Document doc) {
-//
-//    }
 
+    /**
+     * Даёт {@code List} всех ссылок на вакансии, на странице форума.
+     * Фильтрует только вакансии подходящие под фильтр. filterLinks() - метод фильтрации.
+     *
+     * @param doc - Документ(Страница форума).
+     * @return - Список ссылок что прошли фильтр.
+     */
     private List<String> listOfPostsLinks(Document doc) {
         var tempTable = doc.getElementsByClass("forumTable").first();
-        var tempList = tempTable.getElementsByTag("a").eachAttr("href");
-        return linksFilter(tempList);
+        List<String> tempList = tempTable.getElementsByTag("a").eachAttr("href");
+        return filterLinks(tempList);
     }
 
-    private List<String> linksFilter(List<String> postsLinks) {
+    /**
+     * Метод фильтрации ссылок на вакансии. Специально для listOfPostsLinks(...)
+     *
+     * @param postsLinks - Список ссылок для фильтра.
+     * @return Прошедшие фильтр.
+     */
+    private List<String> filterLinks(List<String> postsLinks) {
         return postsLinks.stream()
-                .filter(link -> link.matches(".*[Jj][Aa][Vv][Aa]+.*") &&
-                        !link.matches(".*[Ss][Cc][Rr][Ii][Pp][Tt]+.*"))
+                .filter(link -> link.matches(".*[Jj][Aa][Vv][Aa]+.*")
+                        && !link.matches(".*[Ss][Cc][Rr][Ii][Pp][Tt]+.*"))
                 .collect(Collectors.toList());
     }
-
 
 }

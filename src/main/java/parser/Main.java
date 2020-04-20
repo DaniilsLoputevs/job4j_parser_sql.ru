@@ -20,7 +20,7 @@ public class Main {
         var main = new Main();
         main.initConfig();
         Parse parser = new Parser();
-        var temp = parser.list(main.config.getProperty("targeturl"));
+        var temp = parser.list(main.config.getProperty("target.url"));
         main.initConnection();
         Store store = new PostgreSqlStore(main.connection);
         store.saveAll(temp);

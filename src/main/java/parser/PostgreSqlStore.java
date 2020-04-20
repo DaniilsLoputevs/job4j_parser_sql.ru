@@ -22,7 +22,8 @@ public class PostgreSqlStore implements Store {
     @Override
     public void save(Post post) {
         try (var st = this.connection.prepareStatement(
-                "insert into posts(name, text, link) values(?, ?, ?);")) {
+                "insert into posts(name, text, link) values(?, ?, ?) "
+                        + "on conflict (link) do nothing;")) {
 
             st.setString(1, post.getName());
             st.setString(2, post.getDesc());
@@ -71,7 +72,7 @@ public class PostgreSqlStore implements Store {
                     + "id         serial primary key,"
                     + "name       varchar(200),"
                     + "text       text,"
-                    + "link       varchar(100));");
+                    + "link       varchar(100) UNIQUE);");
         } catch (SQLException e) {
             LOG.error(e.getMessage(), e);
         }

@@ -2,7 +2,6 @@ package parser;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import parser.connection.ConnectionRollback;
@@ -31,11 +30,6 @@ public class PostgreSqlStoreTest {
     public void setUp() {
         initConnection();
         this.store = new PostgreSqlStore(this.connection);
-    }
-
-    @After
-    public void tearDown() {
-
     }
 
     @Test
