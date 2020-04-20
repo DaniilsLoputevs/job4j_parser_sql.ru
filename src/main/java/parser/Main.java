@@ -13,7 +13,6 @@ import java.util.Properties;
 
 public class Main {
     private Properties config = new Properties();
-    private Connection connection;
     private static final Logger LOG = LogManager.getLogger(Main.class.getName());
 
     public static void main(String[] args) {
@@ -21,8 +20,7 @@ public class Main {
         main.initConfig();
         Parse parser = new Parser();
         var temp = parser.list(main.config.getProperty("target.url"));
-        main.initConnection();
-        Store store = new PostgreSqlStore(main.connection);
+        Store store = new PostgreSqlStore(main.initConnection());
         store.saveAll(temp);
 
     }
@@ -37,9 +35,10 @@ public class Main {
         }
     }
 
-    private void initConnection() {
+    private Connection initConnection() {
+        Connection result = null;
         try {
-            this.connection = DriverManager.getConnection(
+            result = DriverManager.getConnection(
                     config.getProperty("url"),
                     config.getProperty("username"),
                     config.getProperty("password")
@@ -48,5 +47,6 @@ public class Main {
         } catch (SQLException e) {
             LOG.error(e.getMessage(), e);
         }
+        return result;
     }
 }

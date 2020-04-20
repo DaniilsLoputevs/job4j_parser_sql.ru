@@ -5,18 +5,18 @@ import org.apache.logging.log4j.Logger;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
-import org.jsoup.select.Elements;
 import org.junit.Test;
 
 import java.io.IOException;
-import java.util.*;
+import java.util.List;
 import java.util.stream.Collectors;
 
 /*
-TODO - ? Дату публикации вакансии, нужно заносить в базу или нет?
 TODO - Thread.sleep(250 ms) - хороший тон.
+TODO - Парсиг Даты.
+TODO - javaDoc - spelling + translate to Ang.
+TODO - Тест для Parser && Main
 TODO -
-
 */
 public class ParserTest {
     private String connectUlr = "https://www.sql.ru/forum/job-offers/1";
