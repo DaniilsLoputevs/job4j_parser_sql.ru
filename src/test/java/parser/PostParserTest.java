@@ -38,9 +38,9 @@ public class PostParserTest {
 
     @Test
     public void parseDate() {
-        var result = parser.parseDate();
-        var expected = "14 апр 20, 19:44  ";
-        assertEquals(expected, result);
+        var result = parser.parseDate().toString();
+        var expected = "Tue Apr 14";
+        assertTrue(result.contains(expected));
     }
 
 

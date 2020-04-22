@@ -16,7 +16,7 @@ public class PostgreSqlStore implements Store {
 
     public PostgreSqlStore(Connection connection) {
         this.connection = connection;
-        createTableIfNotExits();
+//        createTableIfNotExits();
     }
 
     @Override
@@ -65,17 +65,17 @@ public class PostgreSqlStore implements Store {
         return result;
     }
 
-    private void createTableIfNotExits() {
-        try {
-            var st = this.connection.createStatement();
-            st.execute("create table if not exists posts ("
-                    + "id         serial primary key,"
-                    + "name       varchar(200),"
-                    + "text       text,"
-                    + "link       varchar(100) UNIQUE);");
-        } catch (SQLException e) {
-            LOG.error(e.getMessage(), e);
-        }
-    }
+//    private void createTableIfNotExits() {
+//        try {
+//            var st = this.connection.createStatement();
+//            st.execute("create table if not exists posts ("
+//                    + "id         serial primary key,"
+//                    + "name       varchar(200),"
+//                    + "text       text,"
+//                    + "link       varchar(100) UNIQUE);");
+//        } catch (SQLException e) {
+//            LOG.error(e.getMessage(), e);
+//        }
+//    }
 
 }

@@ -1,5 +1,7 @@
 package parser;
 
+import java.util.Date;
+
 /**
  * Модель данных: Вакансия.
  *
@@ -26,7 +28,7 @@ public class Post {
     /**
      * Дата публикации вакансии.
      */
-    private String date;
+    private Date date;
 
 
     public Post(String name, String desc, String link) {
@@ -35,7 +37,7 @@ public class Post {
         this.link = link;
     }
 
-    public Post(String name, String desc, String link, String date) {
+    public Post(String name, String desc, String link, Date date) {
         this.name = name;
         this.desc = desc;
         this.link = link;
@@ -54,7 +56,7 @@ public class Post {
         return link;
     }
 
-    public String getDate() {
+    public Date getDate() {
         return date;
     }
 

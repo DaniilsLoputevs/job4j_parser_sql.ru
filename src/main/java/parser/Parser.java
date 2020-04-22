@@ -26,6 +26,9 @@ public class Parser implements Parse {
             link = link.substring(0, 36);
             var run = true;
             int pageNum = 1;
+            var tempCfg = new ConfigLoader();
+//            tempCfg.load();
+//            var lastStart = tempCfg.value()
 
             while (run) {
                 // iterate forum pages
@@ -46,7 +49,7 @@ public class Parser implements Parse {
             }
 
         } catch (IOException e) {
-            e.printStackTrace();
+            LOG.error(e.getMessage(), e);
         }
 
         return result;

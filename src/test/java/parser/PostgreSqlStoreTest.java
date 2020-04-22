@@ -3,7 +3,7 @@ package parser;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.junit.Before;
-import org.junit.Test;
+import org.junit.Ignore;
 import parser.connection.ConnectionRollback;
 
 import java.io.File;
@@ -32,7 +32,8 @@ public class PostgreSqlStoreTest {
         this.store = new PostgreSqlStore(this.connection);
     }
 
-    @Test
+//    @Test
+    @Ignore
     public void testSaveAndGet() {
         var list = List.of(
                 new Post("job1", "111", "www.link1.ru"),
