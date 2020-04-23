@@ -3,27 +3,26 @@ package parser;
 import java.util.List;
 
 /**
- * Описывает извлечения данных с сайта.
+ * Describe take and parse data from URL{@code String}.
  *
- * Этот компонент позволяет собрать короткое описание всех вакансий,
- * а так же загрузить детали по каждому объявлению.
+ * @author Daniils Loputevs (laiwiense@gmail.com)
+ * @version $Id$
+ * @since 23.04.20.
  */
 public interface Parse {
     /**
-     * Загружает список вакансий по ссылке.
-     * ВАЖНО: url на список вакансий.
+     * Parse forum-page to {@code List<Post>} with correct posts.
      *
-     * @param link - url.
-     * @return - {@code List} результат чтения из источника.
+     * @param link - forum-page url.
+     * @return - {@code List} with filtered posts.
      */
     List<Post> list(String link);
 
     /**
-     * Загружает детали вакансий по ссылке.
-     * ВАЖНО: url на вакансию.
+     * Parse post-page to {@code Post}.
      *
-     * @param link - url.
-     * @return - вакансия.
+     * @param link - post-pag url.
+     * @return - {@code Post}
      */
     Post detail(String link);
 }

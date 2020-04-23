@@ -3,30 +3,32 @@ package parser;
 import java.util.Date;
 
 /**
- * Модель данных: Вакансия.
+ * Data Model: Post from: https://www.sql.ru/forum/job-offers/1
  *
- * В базу должен быть id для каждой вкансии.
+ * @author Daniils Loputevs (laiwiense@gmail.com)
+ * @version $Id$
+ * @since 23.04.20.
  */
 public class Post {
-//    id - первичный ключ
 
     /**
-     * Имя вакансии.
+     * Post's name.
      */
     private String name;
 
     /**
-     * Текст вакансии.
+     * Post's context/content/description.
      */
     private String desc;
 
     /**
-     * Ссылка на вакансию.
+     * Post's link.
      */
     private String link;
 
     /**
-     * Дата публикации вакансии.
+     * Post's publications date.
+     * * Need for {@code Parser} - compare last start date and this date.
      */
     private Date date;
 

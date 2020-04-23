@@ -1,52 +1,95 @@
 package parser;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.quartz.*;
+import org.quartz.impl.StdSchedulerFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import java.io.FileReader;
-import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
-import java.util.Objects;
-import java.util.Properties;
 
-public class Main {
-    private Properties config = new Properties();
-    private static final Logger LOG = LogManager.getLogger(Main.class.getName());
+import static org.quartz.JobBuilder.newJob;
+import static org.quartz.SimpleScheduleBuilder.simpleSchedule;
+import static org.quartz.TriggerBuilder.newTrigger;
+
+/**
+ * Main class.
+ *
+ * @author Daniils Loputevs (laiwiense@gmail.com)
+ * @version $Id$
+ * @since 23.04.20.
+ */
+public class Main implements Grab {
+    private static Config config = new Config();
+    private static final Logger LOG = LoggerFactory.getLogger(Main.class);
 
     public static void main(String[] args) {
-        var main = new Main();
-        main.initConfig();
-        Parse parser = new Parser();
-        var temp = parser.list(main.config.getProperty("target.url"));
-        Store store = new PostgreSqlStore(main.initConnection());
-        store.saveAll(temp);
+        var interval = Integer.valueOf(config.getValue("cron.time"));
 
-    }
-
-    private void initConfig() {
         try {
-            var temp = Objects.requireNonNull(
-                    Main.class.getClassLoader().getResource("app.properties")).getFile();
-            config.load(new FileReader(temp));
-        } catch (IOException e) {
-            LOG.error(e.getMessage(), e);
+            Scheduler scheduler = StdSchedulerFactory.getDefaultScheduler();
+            scheduler.start();
+            JobDetail job = newJob(Logic.class).build();
+
+            SimpleScheduleBuilder times = simpleSchedule()
+                    .withIntervalInSeconds(interval)
+                    .repeatForever();
+
+            Trigger trigger = newTrigger()
+                    .startNow()
+                    .withSchedule(times)
+                    .build();
+            scheduler.scheduleJob(job, trigger);
+
+        } catch (SchedulerException se) {
+            LOG.error(se.getMessage(), se);
         }
     }
 
-    private Connection initConnection() {
-        Connection result = null;
-        try {
-            result = DriverManager.getConnection(
-                    config.getProperty("url"),
-                    config.getProperty("username"),
-                    config.getProperty("password")
-            );
 
-        } catch (SQLException e) {
-            LOG.error(e.getMessage(), e);
+    /**
+     * Business logic og this App.
+     * implements Job -> for describe logic that need to repeat by interval.
+     */
+    private static class Logic implements Job {
+
+        private static final Logger LOG = LoggerFactory.getLogger(Logic.class);
+
+        /**
+         * Describe all business logic.
+         *
+         * @param context - param by org.quartz
+         * @throws JobExecutionException - org.quartz Exceptions.
+         */
+        @Override
+        public void execute(JobExecutionContext context) throws JobExecutionException {
+            // здесь вся компоновка проги и весь старт.
+            var logic = new Logic();
+
+            Parse parser = new Parser();
+            var postsList = parser.list(config.getValue("target.url"));
+
+            Store store = new PostgreSqlStore(logic.initConnectionDb());
+            store.saveAll(postsList);
+            config.update();
         }
-        return result;
+
+        private Connection initConnectionDb() {
+            Connection result = null;
+            try {
+                result = DriverManager.getConnection(
+                        config.getValue("url"),
+                        config.getValue("username"),
+                        config.getValue("password")
+                );
+
+            } catch (SQLException e) {
+                LOG.error(e.getMessage(), e);
+            }
+            return result;
+        }
     }
+
+
 }

@@ -1,9 +1,9 @@
 package parser;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.junit.Before;
-import org.junit.Ignore;
+import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import parser.connection.ConnectionRollback;
 
 import java.io.File;
@@ -24,7 +24,7 @@ public class PostgreSqlStoreTest {
     private Connection connection;
 
     private Store store;
-    private static final Logger LOG = LogManager.getLogger(Store.class.getName());
+    private static final Logger LOG = LoggerFactory.getLogger(PostgreSqlStoreTest.class);
 
     @Before
     public void setUp() {
@@ -32,8 +32,7 @@ public class PostgreSqlStoreTest {
         this.store = new PostgreSqlStore(this.connection);
     }
 
-//    @Test
-    @Ignore
+    @Test
     public void testSaveAndGet() {
         var list = List.of(
                 new Post("job1", "111", "www.link1.ru"),
@@ -58,9 +57,9 @@ public class PostgreSqlStoreTest {
             this.config.load(new FileReader(new File(propPath)));
 
             this.connection = DriverManager.getConnection(
-                    config.getProperty("url"),
-                    config.getProperty("username"),
-                    config.getProperty("password")
+                    config.getProperty("jdbc.url"),
+                    config.getProperty("jdbc.username"),
+                    config.getProperty("jdbc.password")
             );
             // just make a comment line below if you don't need a rollback connection
             this.connection = ConnectionRollback.create(connection);

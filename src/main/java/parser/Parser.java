@@ -1,34 +1,34 @@
 package parser;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
+/**
+ * Realize interface {@code Parse} - Parse web-page: https://www.sql.ru/forum/job-offers/1
+ *
+ * @author Daniils Loputevs (laiwiense@gmail.com)
+ * @version $Id$
+ * @since 23.04.20.
+ */
 public class Parser implements Parse {
 
-    private static final Logger LOG = LogManager.getLogger(Parser.class.getName());
-    /*
-       catch (SQLException e) {
-            LOG.error(e.getMessage(), e);
-            }
-     */
+    private static final Logger LOG = LoggerFactory.getLogger(Parser.class);
 
 
     @Override
     public List<Post> list(String link) {
-        List<Post> result = null;
+        List<Post> result = new LinkedList<>();
         try {
             link = link.substring(0, 36);
             var run = true;
             int pageNum = 1;
-            var tempCfg = new ConfigLoader();
-//            tempCfg.load();
-//            var lastStart = tempCfg.value()
+            var lastStart = getCurrentDate();
 
             while (run) {
                 // iterate forum pages
@@ -36,14 +36,16 @@ public class Parser implements Parse {
                 Document doc = Jsoup.connect(newLink).get();
                 List<String> postsLinks = listOfPostsLinks(doc);
 
-//                postsLinks.stream().flatMap(postLink -> postLink)
-
-
                 for (var postLink : postsLinks) {
                     var temp = detail(postLink);
-                    // if date less that need >> break from forEach && brake from while
-                    // else add temp in result
-//                    if (temp.getDate() >)
+                    // if post's date is after that last start date >> add post in result
+                    // else break from forEach && brake while - finish forum parsing
+                    if (lastStart.before(temp.getDate())) {
+                        result.add(temp);
+                    } else {
+                        run = false;
+                        break;
+                    }
                 }
 
             }
@@ -51,7 +53,6 @@ public class Parser implements Parse {
         } catch (IOException e) {
             LOG.error(e.getMessage(), e);
         }
-
         return result;
     }
 
@@ -68,29 +69,65 @@ public class Parser implements Parse {
 
 
     /**
-     * Даёт {@code List} всех ссылок на вакансии, на странице форума.
-     * Фильтрует только вакансии подходящие под фильтр. filterLinks() - метод фильтрации.
+     * Collect all post-links from forum-page in {@code List} by link-filter.
+     * * filter described in {@code this.filterLinks() }
      *
-     * @param doc - Документ(Страница форума).
-     * @return - Список ссылок что прошли фильтр.
+     * @param doc - {@code Document} HTML forum-page.
+     * @return - {@code List} with all post-links.
      */
     private List<String> listOfPostsLinks(Document doc) {
         var tempTable = doc.getElementsByClass("forumTable").first();
         List<String> tempList = tempTable.getElementsByTag("a").eachAttr("href");
-        return filterLinks(tempList);
+        return this.filterLinks(tempList);
     }
 
     /**
-     * Метод фильтрации ссылок на вакансии. Специально для listOfPostsLinks(...)
+     * filter post-links by matches in name.
+     * * Special for {@code listOfPostsLinks() }
      *
-     * @param postsLinks - Список ссылок для фильтра.
-     * @return Прошедшие фильтр.
+     * @param postsLinks - {@code List} with all post-links.
+     * @return - {@code List} with correct post-links.
      */
     private List<String> filterLinks(List<String> postsLinks) {
         return postsLinks.stream()
                 .filter(link -> link.matches(".*[Jj][Aa][Vv][Aa]+.*")
                         && !link.matches(".*[Ss][Cc][Rr][Ii][Pp][Tt]+.*"))
                 .collect(Collectors.toList());
+    }
+
+
+    /**
+     * Return date of last program start.
+     *
+     * @return - Actual date. If it's a first start, - return 1 January Current Year.
+     */
+    private Date getCurrentDate() {
+        var cfgTime = new Config().getValue("previous.start");
+        Date result;
+        var calendar = new GregorianCalendar();
+
+        if ("".equals(cfgTime)) {
+            calendar.set(Calendar.MONTH, Calendar.JANUARY);
+            calendar.set(Calendar.DATE, 1);
+            calendar.set(Calendar.HOUR, -12);
+            calendar.set(Calendar.MINUTE, 0);
+            calendar.set(Calendar.SECOND, 0);
+
+            result = calendar.getTime();
+
+        } else {
+            var splitTime = cfgTime.split("-");
+            calendar.set(Calendar.YEAR, Integer.valueOf(splitTime[0]));
+            calendar.set(Calendar.MONTH, Integer.valueOf(splitTime[1]) - 1);
+            calendar.set(Calendar.DATE, Integer.valueOf(splitTime[2]));
+
+            calendar.set(Calendar.HOUR, -12);
+            calendar.set(Calendar.MINUTE, 0);
+            calendar.set(Calendar.SECOND, 0);
+
+            result = calendar.getTime();
+        }
+        return result;
     }
 
 }

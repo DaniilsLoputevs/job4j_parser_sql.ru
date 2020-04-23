@@ -1,7 +1,7 @@
 package parser;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -9,9 +9,16 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Predicate;
 
+/**
+ *  Realize interface {@code Store} - work with PostgreSQL.
+ *
+ * @author Daniils Loputevs (laiwiense@gmail.com)
+ * @version $Id$
+ * @since 23.04.20.
+ */
 public class PostgreSqlStore implements Store {
     private Connection connection;
-    private static final Logger LOG = LogManager.getLogger(Parser.class.getName());
+    private static final Logger LOG = LoggerFactory.getLogger(PostgreSqlStore.class);
 
 
     public PostgreSqlStore(Connection connection) {

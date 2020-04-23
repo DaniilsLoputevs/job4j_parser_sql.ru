@@ -4,29 +4,33 @@ import java.util.List;
 import java.util.function.Predicate;
 
 /**
- * Интерфейс осуществляет связь с базой Postgresql.
+ * Interface describe work with DB.
+ *
+ * @author Daniils Loputevs (laiwiense@gmail.com)
+ * @version $Id$
+ * @since 23.04.20.
  */
 public interface Store {
     /**
-     * Сохраняет объявление в базе.
+     * Save post in DB.
      *
-     * @param post - Вакансия.
+     * @param post - {@code Post}.
      */
     void save(Post post);
 
     /**
-     * Сохраняет список Вакансий.
-     * list.forEach(this::save); - Итерарот save()
+     * Save {@code List<Post>} in DB.
+     * * list.forEach(this::save); - iterate save()
      *
-     * @param list - {@code List} Вакансий.
+     * @param list - {@code List<Post>}
      */
     void saveAll(List<Post> list);
 
     /**
-     * Извлекает список вакансий из базы, по подходящему услоию.
+     * Load {@code Post} from DB, by filter.
      *
-     * @param filter - условие поиска.
-     * @return - {@code List} результат поиска.
+     * @param filter - Predicate<Post> - filter like sql query.
+     * @return - {@code List<Post>} .
      */
     List<Post> get(Predicate<Post> filter);
 }

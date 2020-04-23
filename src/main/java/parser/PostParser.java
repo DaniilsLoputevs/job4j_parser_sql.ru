@@ -2,14 +2,23 @@ package parser;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.util.*;
 
+/**
+ * Parse post-page to {@code Post}.
+ *
+ * @author Daniils Loputevs (laiwiense@gmail.com)
+ * @version $Id$
+ * @since 23.04.20.
+ */
 public class PostParser {
-
     private final Map<String, Integer> dateMap = new HashMap<>();
     private Document postDoc;
+    private static final Logger LOG = LoggerFactory.getLogger(PostParser.class);
 
     public PostParser(String link) {
         dateMap.put("янв", 0);
@@ -24,10 +33,10 @@ public class PostParser {
         dateMap.put("окт", 9);
         dateMap.put("ноя", 10);
         dateMap.put("дек", 11);
-        parsePost(link);
+        connectTo(link);
     }
 
-    private void parsePost(String link) {
+    private void connectTo(String link) {
         try {
             this.postDoc = Jsoup.connect(link).get();
         } catch (IOException e) {
@@ -36,27 +45,54 @@ public class PostParser {
     }
 
 
+    /**
+     * Get name for {@code Post}.
+     *
+     * @return - Name from post-page.
+     */
     public String parseName() {
         var temp = postDoc.getElementsByClass("messageHeader").first();
         return temp.getElementsByTag("td").text();
     }
 
+    /**
+     * Get describe for {@code Post}.
+     *
+     * @return - describe from post-page.
+     */
     public String parseDesc() {
         var temp1 = postDoc.getElementsByClass("msgTable").first();
         return temp1.getElementsByClass("msgBody").next().text();
     }
 
+    /**
+     * Get link for {@code Post}.
+     *
+     * @return - link from post-page.
+     */
     public String parseLink() {
         return postDoc.location();
     }
 
+    /**
+     * Get {@code Date} for {@code Post}.
+     * * Special for Parser.list(...).
+     *
+     * @return - {@code Date} from post-page.
+     */
     public Date parseDate() {
         var temp1 = postDoc.getElementsByClass("msgTable").first();
         var temp2 = temp1.getElementsByClass("msgFooter").tagName("td").text();
         return convertDate(temp2);
     }
 
-    public Date convertDate(String complexDate) {
+    /**
+     * Convert date from post-page in normal format.
+     *
+     * @param complexDate - date from post-page.
+     * @return - date in normal format.
+     */
+    private Date convertDate(String complexDate) {
         var tmp = complexDate.substring(0, complexDate.indexOf(","));
         String[] splitDate = tmp.split(" ");
         Date result = null;
@@ -74,19 +110,16 @@ public class PostParser {
             }
 
         } else {
-            int[] datePart = new int[3];
 
-            datePart[0] = 2000 + Integer.valueOf(splitDate[2]);  // set year
-            datePart[1] = this.dateMap.get(splitDate[1]);  // set month
-            datePart[2] = Integer.valueOf(splitDate[0]);  // set day
+            var year = 2000 + Integer.parseInt(splitDate[2]);  // set year
+            var month = this.dateMap.get(splitDate[1]);      // set month
+            var day = Integer.parseInt(splitDate[0]);        // set day
 
-            var rsl = new GregorianCalendar();
-            //       year           month         day
-            rsl.set(datePart[0], datePart[1], datePart[2]);
-            result = rsl.getTime();
-//            result = new SimpleDateFormat("yyyy-MM-dd").format(rsl.getTime());
+            var calendar = new GregorianCalendar();
+            calendar.set(year, month, day);
+            result = calendar.getTime();
+//            result = new SimpleDateFormat("yyyy-MM-dd").format(calendar.getTime());
         }
-
         return result;
     }
 
