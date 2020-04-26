@@ -3,4 +3,4 @@
 
 # Parser_SQL.ru
 
-studying project on course job4j.ru
+Project for parsing web-site: https://www.sql.ru/forum/job/

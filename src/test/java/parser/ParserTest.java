@@ -19,11 +19,10 @@ public class ParserTest {
     public void list() {
         var result = parser.list(forumUrl);
 
-        System.out.println("Start Run ####");
-        System.out.println("Result size: " + result.size());
-        System.out.println("Result Var: ");
-
-        System.out.println("Finish Run ####");
+//        System.out.println("Start Run ####");
+//        System.out.println("Result size: " + result.size());
+//
+//        System.out.println("Finish Run ####");
         assertTrue(result.size() >= 24);
     }
 
