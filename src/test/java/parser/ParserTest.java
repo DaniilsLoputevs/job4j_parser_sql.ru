@@ -18,12 +18,6 @@ public class ParserTest {
     @Test
     public void list() {
         var result = parser.list(forumUrl);
-
-        // This code for Debug!
-//        System.out.println("Start Run ####");
-//        System.out.println("Result size: " + result.size());
-//        System.out.println("Finish Run ####");
-
         assertTrue(result.size() >= 24);
     }
 
