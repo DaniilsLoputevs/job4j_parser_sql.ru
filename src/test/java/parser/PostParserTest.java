@@ -1,19 +1,14 @@
 package parser;
 
-import org.junit.Before;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 public class PostParserTest {
-    private PostParser parser;
-    private String postUrl = "https://www.sql.ru/forum/1324373/java-razrabotchik-krasnodar-moskva-90-000-150-000-net";
 
-    @Before
-    public void setUp() {
-        parser = new PostParser(postUrl);
-    }
+    private String postUrl = "https://www.sql.ru/forum/1324373/java-razrabotchik-krasnodar-moskva-90-000-150-000-net";
+    private PostParser parser = new PostParser(postUrl);
 
     @Test
     public void parseName() {
@@ -42,6 +37,5 @@ public class PostParserTest {
         var expected = "Tue Apr 14";
         assertTrue(result.contains(expected));
     }
-
 
 }

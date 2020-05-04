@@ -13,11 +13,11 @@ import java.util.*;
  *
  * @author Daniils Loputevs (laiwiense@gmail.com)
  * @version $Id$
- * @since 23.04.20.
+ * @since 04.05.20.
  */
 public class PostParser {
     private final Map<String, Integer> dateMap = new HashMap<>();
-    private Document postDoc;
+    private String link;
     private static final Logger LOG = LoggerFactory.getLogger(PostParser.class);
 
     public PostParser(String link) {
@@ -33,15 +33,17 @@ public class PostParser {
         dateMap.put("окт", 9);
         dateMap.put("ноя", 10);
         dateMap.put("дек", 11);
-        connectTo(link);
+        this.link = link;
     }
 
-    private void connectTo(String link) {
+    private Document connectTo(String link) {
+        Document result = null;
         try {
-            this.postDoc = Jsoup.connect(link).get();
+            result = Jsoup.connect(link).get();
         } catch (IOException e) {
             e.printStackTrace();
         }
+        return result;
     }
 
 
@@ -51,6 +53,7 @@ public class PostParser {
      * @return - Name from post-page.
      */
     public String parseName() {
+        var postDoc = connectTo(this.link);
         var temp = postDoc.getElementsByClass("messageHeader").first();
         return temp.getElementsByTag("td").text();
     }
@@ -61,6 +64,7 @@ public class PostParser {
      * @return - describe from post-page.
      */
     public String parseDesc() {
+        var postDoc = connectTo(this.link);
         var temp1 = postDoc.getElementsByClass("msgTable").first();
         return temp1.getElementsByClass("msgBody").next().text();
     }
@@ -71,6 +75,7 @@ public class PostParser {
      * @return - link from post-page.
      */
     public String parseLink() {
+        var postDoc = connectTo(this.link);
         return postDoc.location();
     }
 
@@ -81,6 +86,7 @@ public class PostParser {
      * @return - {@code Date} from post-page.
      */
     public Date parseDate() {
+        var postDoc = connectTo(this.link);
         var temp1 = postDoc.getElementsByClass("msgTable").first();
         var temp2 = temp1.getElementsByClass("msgFooter").tagName("td").text();
         return convertDate(temp2);
@@ -96,11 +102,8 @@ public class PostParser {
         var tmp = complexDate.substring(0, complexDate.indexOf(","));
         String[] splitDate = tmp.split(" ");
         Date result = null;
-//        String result = null;
-
         if (splitDate.length == 1) {
             var cal = Calendar.getInstance();
-
             if ("вчера".equals(splitDate[0])) {
                 cal.add(Calendar.DATE, -1);
                 result = cal.getTime();
@@ -110,15 +113,12 @@ public class PostParser {
             }
 
         } else {
-
             var year = 2000 + Integer.parseInt(splitDate[2]);  // set year
-            var month = this.dateMap.get(splitDate[1]);      // set month
+            var month = this.dateMap.get(splitDate[1]);       // set month
             var day = Integer.parseInt(splitDate[0]);        // set day
-
             var calendar = new GregorianCalendar();
             calendar.set(year, month, day);
             result = calendar.getTime();
-//            result = new SimpleDateFormat("yyyy-MM-dd").format(calendar.getTime());
         }
         return result;
     }

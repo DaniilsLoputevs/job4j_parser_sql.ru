@@ -28,7 +28,7 @@ public class PostgreSqlStoreTest {
 
     @Before
     public void setUp() {
-        initConnection();
+        initConnectionRollBack();
         this.store = new PostgreSqlStore(this.connection);
     }
 
@@ -51,21 +51,22 @@ public class PostgreSqlStoreTest {
         assertTrue(r3.size() > 0);
     }
 
-    private void initConnection() {
+    /**
+     * Init connection to DB.
+     * <p>
+     * If you don't need rollback connection - make comment code below:
+     * this.connection = ConnectionRollback.create(connection);
+     */
+    private void initConnectionRollBack() {
         try {
             this.config = new Properties();
             this.config.load(new FileReader(new File(propPath)));
-
             this.connection = DriverManager.getConnection(
                     config.getProperty("jdbc.url"),
                     config.getProperty("jdbc.username"),
                     config.getProperty("jdbc.password")
             );
-            // just make a comment line below if you don't need a rollback connection
             this.connection = ConnectionRollback.create(connection);
-
-            this.store = new PostgreSqlStore(connection);
-
         } catch (SQLException | IOException e) {
             LOG.error(e.getMessage(), e);
         }

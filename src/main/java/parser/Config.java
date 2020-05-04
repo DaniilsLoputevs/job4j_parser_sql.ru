@@ -3,21 +3,22 @@ package parser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.*;
+import java.io.File;
+import java.io.IOException;
+import java.io.Writer;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
 import java.util.GregorianCalendar;
 import java.util.Objects;
 import java.util.Properties;
-import java.util.StringJoiner;
 
 /**
  * Describe and work with all app properties.
  *
  * @author Daniils Loputevs (laiwiense@gmail.com)
  * @version $Id$
- * @since 23.04.20.
+ * @since 04.05.20.
  */
 public class Config {
     private String path;
@@ -33,15 +34,22 @@ public class Config {
         load();
     }
 
+    public Config(String path) {
+        this.path = path;
+        this.config = new Properties();
+        load();
+    }
+
     /**
      * Load properties from config file.
-     * Path to config file init
+     * Path to config file init.
      */
     private void load() {
         try (var tempIn = Files.newBufferedReader(Paths.get(path))) {
-
             config.load(tempIn);
-
+            if (config.isEmpty()) {
+                throw new RuntimeException();
+            }
         } catch (IOException e) {
             LOG.error(e.getMessage(), e);
         }
@@ -55,14 +63,12 @@ public class Config {
         try (Writer tempOut = Files.newBufferedWriter(Paths.get(path))) {
             var ls = System.lineSeparator();
             config.setProperty("previous.start", getCurrentDate());
-
             tempOut.write("jdbc.url=" + config.getProperty("jdbc.url") + ls);
             tempOut.write("jdbc.username=" + config.getProperty("jdbc.username") + ls);
             tempOut.write("jdbc.password=" + config.getProperty("jdbc.password") + ls);
             tempOut.write("target.url=" + config.getProperty("target.url") + ls);
             tempOut.write("cron.time=" + config.getProperty("cron.time") + ls);
             tempOut.write("previous.start=" + config.getProperty("previous.start") + ls);
-
             tempOut.flush();
         } catch (IOException e) {
             LOG.error(e.getMessage(), e);
@@ -96,12 +102,6 @@ public class Config {
 
     @Override
     public String toString() {
-        StringJoiner out = new StringJoiner(System.lineSeparator());
-        try (BufferedReader read = new BufferedReader(new FileReader(this.path))) {
-            read.lines().forEach(out::add);
-        } catch (Exception e) {
-            LOG.error(e.getMessage(), e);
-        }
-        return out.toString();
+        return "Config: " + config;
     }
 }

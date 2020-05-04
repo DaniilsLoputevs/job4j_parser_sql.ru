@@ -14,13 +14,19 @@ import java.util.stream.Collectors;
  *
  * @author Daniils Loputevs (laiwiense@gmail.com)
  * @version $Id$
- * @since 23.04.20.
+ * @since 04.05.20.
  */
 public class Parser implements Parse {
 
     private static final Logger LOG = LoggerFactory.getLogger(Parser.class);
 
 
+    /**
+     * add all posts in result, while last start is BEFORE that post's date.
+     *
+     * @param link - forum-page url.
+     * @return - {@code List} with filtered posts.
+     */
     @Override
     public List<Post> list(String link) {
         List<Post> result = new LinkedList<>();
@@ -29,27 +35,19 @@ public class Parser implements Parse {
             var run = true;
             int pageNum = 1;
             var lastStart = getCurrentDate();
-
             while (run) {
-                // iterate forum pages
-                var newLink = link + pageNum++;
+                var newLink = link + pageNum++;  // iterate by forum pages.
                 Document doc = Jsoup.connect(newLink).get();
                 List<String> postsLinks = listOfPostsLinks(doc);
-
                 for (var postLink : postsLinks) {
                     var temp = detail(postLink);
-                    // if post's date is after that last start date >> add post in result
-                    // else break from forEach && brake while - finish forum parsing
-                    if (lastStart.before(temp.getDate())) {
-                        result.add(temp);
-                    } else {
+                    if (lastStart.after(temp.getDate())) {
                         run = false;
                         break;
                     }
+                    result.add(temp);
                 }
-
             }
-
         } catch (IOException e) {
             LOG.error(e.getMessage(), e);
         }
@@ -105,26 +103,21 @@ public class Parser implements Parse {
         var cfgTime = new Config().getValue("previous.start");
         Date result;
         var calendar = new GregorianCalendar();
-
         if ("".equals(cfgTime)) {
             calendar.set(Calendar.MONTH, Calendar.JANUARY);
             calendar.set(Calendar.DATE, 1);
             calendar.set(Calendar.HOUR, -12);
             calendar.set(Calendar.MINUTE, 0);
             calendar.set(Calendar.SECOND, 0);
-
             result = calendar.getTime();
-
         } else {
             var splitTime = cfgTime.split("-");
             calendar.set(Calendar.YEAR, Integer.valueOf(splitTime[0]));
             calendar.set(Calendar.MONTH, Integer.valueOf(splitTime[1]) - 1);
             calendar.set(Calendar.DATE, Integer.valueOf(splitTime[2]));
-
             calendar.set(Calendar.HOUR, -12);
             calendar.set(Calendar.MINUTE, 0);
             calendar.set(Calendar.SECOND, 0);
-
             result = calendar.getTime();
         }
         return result;
