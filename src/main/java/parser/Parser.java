@@ -34,12 +34,14 @@ public class Parser implements Parse {
             link = link.substring(0, 36);
             int pageNum = 1;
             var lastStart = getCurrentDate();
-            main : while (true) {
+            while (true) {
                 var newLink = link + pageNum++;  // iterate by forum pages.
                 Document doc = Jsoup.connect(newLink).get();
                 for (var postLink : listOfPostsLinks(doc)) {
                     Post currentPost = detail(postLink);
-                    if (lastStart.after(currentPost.getDate()))  break main;
+                    if (lastStart.after(currentPost.getDate())) {
+                       return result;
+                    }
                     result.add(currentPost);
                 }
             }
