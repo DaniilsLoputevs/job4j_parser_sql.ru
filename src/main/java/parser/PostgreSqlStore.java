@@ -56,8 +56,8 @@ public class PostgreSqlStore implements Store {
 
                 while (rs.next()) {
                     var temp = new Post(
-                            rs.getString("name"),
-                            rs.getString("text"),
+                            rs.getString("post_name"),
+                            rs.getString("post_text"),
                             rs.getString("link")
                     );
                     if (filter.test(temp)) {
