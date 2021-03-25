@@ -1,4 +1,4 @@
-drop  table posts;
+drop table if exists posts;
 create table if not exists posts
 (
     id        serial primary key,
