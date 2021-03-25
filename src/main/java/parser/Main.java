@@ -29,7 +29,7 @@ public class Main implements Grab {
             scheduler.start();
             JobDetail job = newJob(Logic.class).build();
             SimpleScheduleBuilder times = simpleSchedule()
-                    .withIntervalInSeconds(interval)
+                    .withIntervalInMinutes(interval)
                     .repeatForever();
             Trigger trigger = newTrigger()
                     .startNow()
@@ -61,16 +61,12 @@ public class Main implements Grab {
             LOG.info("JOB :: START");
             Parse parser = new Parser();
             LOG.info("JOB :: DOWNLOAD & PARSE");
-            System.out.println("DEV : target.url = " + config.getValue("target.url"));
             List<Post> postsList = parser.list(config.getValue("target.url"));
-            System.out.println("DEV : postsList size = " + postsList.size());
-            System.out.println("DEV : postsList = " + postsList);
             LOG.info("JOB :: INIT sql store");
             Store store = new PostgreSqlStore();
             LOG.info("JOB :: SAVE in sql store");
             store.saveAll(postsList);
-            LOG.info("WORK FINISH");
-            LOG.info("JOB RSL = " + postsList.toString());
+            LOG.info("JOB FINISH");
             config.update();
         }
     }

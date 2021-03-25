@@ -32,24 +32,14 @@ public class Parser implements Parse {
         List<Post> result = new LinkedList<>();
         try {
             link = link.substring(0, 36);
-            var run = true;
             int pageNum = 1;
             var lastStart = getCurrentDate();
-            main : while (run) {
+            main : while (true) {
                 var newLink = link + pageNum++;  // iterate by forum pages.
                 Document doc = Jsoup.connect(newLink).get();
-//                System.out.println("DEV : doc = " + doc.text());
                 for (var postLink : listOfPostsLinks(doc)) {
                     Post currentPost = detail(postLink);
-//                    System.out.println("DEV : postLink = " + postLink);
-//                    System.out.println("DEV : currentPost = " + currentPost);
-//                    System.out.println("DEV : lastStart = " + lastStart);
-//                    System.out.println("DEV : currentPost.getDate() = " + currentPost.getDate());
-//                    System.out.println("DEV : if expr = " + lastStart.after(currentPost.getDate()));
-                    if (lastStart.after(currentPost.getDate())) {
-                        run = false;
-                        break;
-                    }
+                    if (lastStart.after(currentPost.getDate()))  break main;
                     result.add(currentPost);
                 }
             }
@@ -111,20 +101,16 @@ public class Parser implements Parse {
         if ("".equals(cfgTime)) {
             calendar.set(Calendar.MONTH, Calendar.JANUARY);
             calendar.set(Calendar.DATE, 1);
-            calendar.set(Calendar.HOUR, -12);
-            calendar.set(Calendar.MINUTE, 0);
-            calendar.set(Calendar.SECOND, 0);
-            result = calendar.getTime();
         } else {
             var splitTime = cfgTime.split("-");
-            calendar.set(Calendar.YEAR, Integer.valueOf(splitTime[0]));
-            calendar.set(Calendar.MONTH, Integer.valueOf(splitTime[1]) - 1);
-            calendar.set(Calendar.DATE, Integer.valueOf(splitTime[2]));
-            calendar.set(Calendar.HOUR, -12);
-            calendar.set(Calendar.MINUTE, 0);
-            calendar.set(Calendar.SECOND, 0);
-            result = calendar.getTime();
+            calendar.set(Calendar.YEAR, Integer.parseInt(splitTime[0]));
+            calendar.set(Calendar.MONTH, Integer.parseInt(splitTime[1]) - 1);
+            calendar.set(Calendar.DATE, Integer.parseInt(splitTime[2]));
         }
+        calendar.set(Calendar.HOUR, -12);
+        calendar.set(Calendar.MINUTE, 0);
+        calendar.set(Calendar.SECOND, 0);
+        result = calendar.getTime();
         return result;
     }
 
