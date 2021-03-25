@@ -158,7 +158,7 @@
                             <encoding>UTF-8</encoding>
                             <consoleOutput>true</consoleOutput>
                             <failsOnError>true</failsOnError>
-                            <includeTestSourceDirectory>true</includeTestSourceDirectory>
+                            <includeTestSourceDirectory>false</includeTestSourceDirectory>
                         </configuration>
                         <goals>
                             <goal>check</goal>

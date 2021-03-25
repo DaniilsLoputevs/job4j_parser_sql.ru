@@ -16,7 +16,7 @@ public class ConfigTest {
         var expected = "Config: {"
                 + "jdbc.password=password, "
                 + "jdbc.username=postgres, "
-                + "previous.start=, cron.time=0 0 12 * *, "
+                + "previous.start=2020-01-01, cron.time=280, "
                 + "jdbc.url=jdbc:postgresql://localhost:5432/parser_sql, "
                 + "target.url=https://www.sql.ru/forum/job-offers/1}";
         assertEquals(expected, result);
