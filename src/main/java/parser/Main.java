@@ -5,6 +5,8 @@ import org.quartz.impl.StdSchedulerFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.List;
+
 import static org.quartz.JobBuilder.newJob;
 import static org.quartz.SimpleScheduleBuilder.simpleSchedule;
 import static org.quartz.TriggerBuilder.newTrigger;
@@ -21,7 +23,7 @@ public class Main implements Grab {
 
     public static void main(String[] args) {
         var config = new Config();
-        var interval = Integer.valueOf(config.getValue("cron.time"));
+        int interval = Integer.parseInt(config.getValue("cron.time"));
         try {
             Scheduler scheduler = StdSchedulerFactory.getDefaultScheduler();
             scheduler.start();
@@ -44,8 +46,8 @@ public class Main implements Grab {
      * Business logic og this App.
      * implements Job -> for describe logic that need to repeat by interval.
      */
-    private static class Logic implements Job {
-        private Config config = new Config();
+    public static class Logic implements Job {
+        private final Config config = new Config();
         private static final Logger LOG = LoggerFactory.getLogger(Logic.class);
 
         /**
@@ -56,12 +58,20 @@ public class Main implements Grab {
          */
         @Override
         public void execute(JobExecutionContext context) throws JobExecutionException {
+            LOG.info("JOB :: START");
             Parse parser = new Parser();
-            var postsList = parser.list(config.getValue("target.url"));
+            LOG.info("JOB :: DOWNLOAD & PARSE");
+            System.out.println("DEV : target.url = " + config.getValue("target.url"));
+            List<Post> postsList = parser.list(config.getValue("target.url"));
+            System.out.println("DEV : postsList size = " + postsList.size());
+            System.out.println("DEV : postsList = " + postsList);
+            LOG.info("JOB :: INIT sql store");
             Store store = new PostgreSqlStore();
+            LOG.info("JOB :: SAVE in sql store");
             store.saveAll(postsList);
+            LOG.info("WORK FINISH");
+            LOG.info("JOB RSL = " + postsList.toString());
             config.update();
         }
     }
-
 }

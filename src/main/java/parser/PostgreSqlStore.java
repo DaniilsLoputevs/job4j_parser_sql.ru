@@ -18,7 +18,7 @@ import java.util.function.Predicate;
  * @since 04.05.20.
  */
 public class PostgreSqlStore implements Store {
-    private Connection connection;
+    private final Connection connection;
     private static final Logger LOG = LoggerFactory.getLogger(PostgreSqlStore.class);
 
     public PostgreSqlStore() {
@@ -32,7 +32,7 @@ public class PostgreSqlStore implements Store {
     @Override
     public void save(Post post) {
         try (var st = this.connection.prepareStatement(
-                "insert into posts(name, text, link) values(?, ?, ?) "
+                "insert into posts(post_name, post_text, link) values(?, ?, ?) "
                         + "on conflict (link) do nothing;")) {
             st.setString(1, post.getName());
             st.setString(2, post.getDesc());
@@ -76,9 +76,9 @@ public class PostgreSqlStore implements Store {
         Connection result = null;
         try {
             result = DriverManager.getConnection(
-                    config.getValue("url"),
-                    config.getValue("username"),
-                    config.getValue("password")
+                    config.getValue("jdbc.url"),
+                    config.getValue("jdbc.username"),
+                    config.getValue("jdbc.password")
             );
         } catch (SQLException e) {
             LOG.error(e.getMessage(), e);

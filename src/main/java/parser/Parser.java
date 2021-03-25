@@ -35,17 +35,22 @@ public class Parser implements Parse {
             var run = true;
             int pageNum = 1;
             var lastStart = getCurrentDate();
-            while (run) {
+            main : while (run) {
                 var newLink = link + pageNum++;  // iterate by forum pages.
                 Document doc = Jsoup.connect(newLink).get();
-                List<String> postsLinks = listOfPostsLinks(doc);
-                for (var postLink : postsLinks) {
-                    var temp = detail(postLink);
-                    if (lastStart.after(temp.getDate())) {
+//                System.out.println("DEV : doc = " + doc.text());
+                for (var postLink : listOfPostsLinks(doc)) {
+                    Post currentPost = detail(postLink);
+//                    System.out.println("DEV : postLink = " + postLink);
+//                    System.out.println("DEV : currentPost = " + currentPost);
+//                    System.out.println("DEV : lastStart = " + lastStart);
+//                    System.out.println("DEV : currentPost.getDate() = " + currentPost.getDate());
+//                    System.out.println("DEV : if expr = " + lastStart.after(currentPost.getDate()));
+                    if (lastStart.after(currentPost.getDate())) {
                         run = false;
                         break;
                     }
-                    result.add(temp);
+                    result.add(currentPost);
                 }
             }
         } catch (IOException e) {
