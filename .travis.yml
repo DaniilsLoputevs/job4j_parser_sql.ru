@@ -9,9 +9,6 @@ sudo: false
 services:
   - postgresql
 
-before_install:
-  - psql -c 'create database parser_sql;' -U postgres
-
 env:
   global:
     - CODECOV_TOKEN="9189665d-8f64-4d92-a365-2638486dec45"
