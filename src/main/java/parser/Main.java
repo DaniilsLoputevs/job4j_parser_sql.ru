@@ -63,9 +63,13 @@ public class Main implements Grab {
             LOG.info("JOB :: DOWNLOAD & PARSE");
             List<Post> postsList = parser.list(config.getValue("target.url"));
             LOG.info("JOB :: INIT sql store");
-            Store store = new PostgreSqlStore();
-            LOG.info("JOB :: SAVE in sql store");
-            store.saveAll(postsList);
+            
+//            Store store = new PostgreSqlStore();
+//            LOG.info("JOB :: SAVE in sql store");
+//            store.saveAll(postsList);
+            
+            LOG.info("JOB :: Show each post");
+            postsList.forEach(System.out::println);
             LOG.info("JOB FINISH");
             config.update();
         }

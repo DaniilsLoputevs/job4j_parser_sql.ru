@@ -1,5 +1,6 @@
 package parser;
 
+import java.text.SimpleDateFormat;
 import java.util.Date;
 
 /**
@@ -62,12 +63,22 @@ public class Post {
         return date;
     }
 
+//    @Override
+//    public String toString() {
+//        return "Post{"
+//                + "name='" + name + '\''
+//                + ", desc='" + desc + '\''
+//                + ", link='" + link + '\''
+//                + '}';
+//    }
+    
     @Override
     public String toString() {
-        return "Post{"
-                + "name='" + name + '\''
-                + ", desc='" + desc + '\''
-                + ", link='" + link + '\''
-                + '}';
+        return System.lineSeparator()
+                + "link = " + link + System.lineSeparator()
+                + "name = " + name + System.lineSeparator()
+                + "desc = " + desc + System.lineSeparator()
+                + "date = " + sdf.format(date);
     }
+    private static SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd hh:mm");
 }
